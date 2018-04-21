@@ -1,35 +1,49 @@
 package com.kotlin.marvel.skm.dao
 
 import com.kotlin.marvel.skm.dao.mapper.AccountMapper
-import com.kotlin.marvel.skm.model.Account
-import org.apache.ibatis.annotations.Param
-import org.springframework.stereotype.Repository
+import com.kotlin.marvel.skm.model.AccountDO
+import org.springframework.stereotype.Component
 import javax.annotation.Resource
 
-@Repository
-class AccountDAO {
+/**
+ * @author marvel
+ * @description 用户 DAO ，该类一定要标识成 open 类型
+ * @date 2018/4/21
+ * @since 1.0
+ */
+@Component
+open class AccountDAO {
 
     @Resource
-    private lateinit var accountMapper: AccountMapper
+    lateinit var accountMapper: AccountMapper
+
+    /**
+     * 插入一个用户
+     */
+    fun insert(account: AccountDO): Int? {
+        return this.accountMapper.insert(account)
+    }
 
     /**
      * 列表
      */
-    fun list(): List<Account>? {
+    fun list(): List<AccountDO>? {
         return this.accountMapper.list()
     }
 
     /**
      * 详情
      */
-    fun detail(@Param("username") username: String): Account? {
+    fun detail(username: String): AccountDO? {
         return this.accountMapper.detail(username)
     }
 
     /**
      * 删除
      */
-    fun delete(@Param("username") username: String) {
+    fun delete(username: String) {
         return this.accountMapper.delete(username)
     }
+
+
 }

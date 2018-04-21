@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kotlin.marvel.skm.dao.mapper.AccountMapper">
+    <resultMap id="BaseResultMap" type="com.kotlin.marvel.skm.model.AccountDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="mailbox" property="mailbox" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, username, mobile, password, mailbox, real_name
+    </sql>
+
+    <!-- 插入一条信息 -->
+    <insert id="insert" parameterType="com.kotlin.marvel.skm.model.AccountDO">
+        insert ignore into account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="mailbox != null">
+                mailbox,
+            </if>
+            <if test="realName != null">
+                real_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="mailbox != null">
+                #{mailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null">
+                #{realName,jdbcType=VARCHAR},
+            </if>
+
+        </trim>
+    </insert>
+
+    <!--
+        @描述：查找所有纪录
+    -->
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account
+    </select>
+
+    <!--
+      @描述：查找用户详细信息
+    -->
+    <select id="detail" resultType="com.kotlin.marvel.skm.model.AccountDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account
+        WHERE username = #{username, jdbcType=VARCHAR}
+    </select>
+
+
+    <!--
+        @描述：根据用户名删除用户信息
+    -->
+    <delete id="delete">
+        DELETE FROM account WHERE username = #{username, jdbcType=VARCHAR}
+    </delete>
+</mapper>
