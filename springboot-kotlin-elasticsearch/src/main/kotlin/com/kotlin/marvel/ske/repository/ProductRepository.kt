@@ -2,7 +2,6 @@ package com.kotlin.marvel.ske.repository
 
 import com.kotlin.marvel.ske.model.Product
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
-import org.springframework.stereotype.Repository
 
 interface ProductRepository : ElasticsearchRepository<Product, Long> {
 
