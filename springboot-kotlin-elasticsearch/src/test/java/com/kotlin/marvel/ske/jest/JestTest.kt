@@ -5,6 +5,9 @@ import io.searchbox.client.JestClientFactory
 import io.searchbox.client.config.HttpClientConfig
 import io.searchbox.client.http.JestHttpClient
 import io.searchbox.core.*
+import io.searchbox.indices.CreateIndex
+import io.searchbox.indices.DeleteIndex
+import io.searchbox.indices.IndicesExists
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
@@ -186,7 +189,41 @@ class JestTest {
         println(json)
     }
 
+    /**
+     * 创建索引
+     */
+    @Test
+    fun createIndex() {
+        val indexExists = httpClient.execute(IndicesExists.Builder(INDEX_NAME).build()).isSucceeded
+        val json = if (indexExists) {
+            // 如果存在就删除索引
+            httpClient.execute(DeleteIndex.Builder(INDEX_NAME).build()).jsonString
+        } else {
+            httpClient.execute(CreateIndex.Builder(INDEX_NAME).build()).jsonString
+        }
+        println(json)
+    }
 
+    /**
+     * 执行 DSL 代码
+     */
+    @Test
+    fun executeByDSL() {
+        val query = "{\n" +
+                "\t\"query\": {\n" +
+                "\t\t\"term\": {\n" +
+                "\t\t\t\"publisher\": \"oreilly\"\n" +
+                "\t\t}\n" +
+                "\t},\n" +
+                "\t\"sort\": [{\n" +
+                "\t\t\"publish_date\": {\n" +
+                "\t\t\t\"order\": \"asc\"\n" +
+                "\t\t}\n" +
+                "\t}]\n" +
+                "}"
 
-
+        val searchBuilder = Search.Builder(query).addIndex(INDEX_NAME).addType(INDEX_TYPE).build()
+        val result = httpClient.execute(searchBuilder)
+        println(result.jsonString)
+    }
 }
