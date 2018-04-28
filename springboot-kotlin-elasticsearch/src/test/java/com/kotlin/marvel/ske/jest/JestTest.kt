@@ -4,11 +4,13 @@ import com.kotlin.marvel.ske.model.Book
 import io.searchbox.client.JestClientFactory
 import io.searchbox.client.config.HttpClientConfig
 import io.searchbox.client.http.JestHttpClient
-import io.searchbox.core.Bulk
-import io.searchbox.core.Delete
-import io.searchbox.core.Index
+import io.searchbox.core.*
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.aggregations.AggregationBuilders
+import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.junit.Before
 import org.junit.Test
+import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -101,11 +103,90 @@ class JestTest {
         println(result.jsonObject)
     }
 
+    @Test
+    fun getDocById() {
+        val id = 15L
+        // 查询 _id 为 #{id} 的 document
+        val get = Get.Builder(INDEX_NAME, id.toString()).type(INDEX_TYPE).build()
+        val execute = httpClient.execute(get)
+        println(execute.jsonString)
+
+    }
+
     /**
      * sum 聚合运算
      */
     @Test
     fun sum() {
+        // 聚合结果列名称
+        val customSumCol = "_sumResultValue"
+
+        val aggregation = AggregationBuilders.sum(customSumCol).field("num_reviews")
+
+        val builder = SearchSourceBuilder()
+        val query = QueryBuilders.termQuery("publisher", "unknown")
+        builder.query(query).aggregation(aggregation)
+        val dsl = builder.toString()
+        println(dsl)
+
+        val action = Search.Builder(dsl).addIndex(INDEX_NAME).addType(INDEX_TYPE).build()
+        val result = httpClient.execute(action)
+        val sum = BigDecimal(result.aggregations.getSumAggregation(customSumCol).sum)
+        println(sum)
 
     }
+
+    /**
+     * count 聚合运算
+     */
+    @Test
+    fun count() {
+        val builder = SearchSourceBuilder()
+        val query = QueryBuilders.termQuery("publisher", "unknown")
+        builder.query(query)
+
+        val count = Count.Builder().query(builder.toString()).addIndex(INDEX_NAME).addType(INDEX_TYPE).build()
+        println(count.toString())
+
+        val json = httpClient.execute(count).jsonString
+        println(json)
+    }
+
+    /**
+     * 分页查找信息
+     */
+    @Test
+    fun search() {
+        val builder = SearchSourceBuilder()
+        val query = QueryBuilders.termQuery("publisher", "unknown")
+        builder.query(query).from(0).size(10)
+        val dsl = builder.toString()
+        println(dsl)
+
+        val action = Search.Builder(dsl).addIndex(INDEX_NAME).addType(INDEX_TYPE).build()
+        val json = httpClient.execute(action).jsonString
+        println(json)
+    }
+
+    /**
+     * 使用 dsl 语句查询
+     */
+    @Test
+    fun searchByDSL() {
+        val dsl = "{\n" +
+                "    \"query\": {\n" +
+                "        \"term\" : {\n" +
+                "            \"publisher\": \"unknown\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+
+        val action = Search.Builder(dsl).addIndex(INDEX_NAME).addType(INDEX_TYPE).build()
+        val json = httpClient.execute(action).jsonString
+        println(json)
+    }
+
+
+
+
 }
