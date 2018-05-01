@@ -1,0 +1,24 @@
+使用 curl 命令
+1. 创建一个索引
+curl -XPUT 'http://localhost:9200/myweibo2/' -d '{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 5,
+            "number_of_replicas" : 1
+        }
+    }
+}'
+
+2. 使用 _settings 字句修改索引文件
+curl -XPUT 'localhost:9200/myweibo1/_settings' -d '{
+    "index" : {
+        "number_of_replicas" : 7
+    }
+}'
+
+上述语句中写 number_of_replicas 参数的地方也可以换成如下参数
+·number_of_replicas —— 设置当前索引的副本数量
+·blocks.read_only —— 如设为 true, 则当前索引只允许读，不允许写或者更新。
+·blocks.read —— 如设为 true，则禁止读取操作
+·blocks.write —— true，禁止写操作
+·blocks.metadata —— true，禁止对 metadata 操作
