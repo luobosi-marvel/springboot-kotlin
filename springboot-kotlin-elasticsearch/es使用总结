@@ -218,10 +218,28 @@ GET /ecommerce/product/_search
   }
 }
 
+9. 修改文档（修改其实就是讲原来的版本删除，然后新增）
+# 修改方式是替换，必须带上所有的字段
+PUT /ecommerce/product/1
+{
+      "name" : "jiaqiangban gaolujie yagao",
+    "desc" :  "gaoxiao meibai",
+    "price" :  30,
+    "producer" :      "gaolujie producer",
+    "tags": [ "meibai", "fangzhu" ]
+}
 
+# 修改某个字段的方式
+POST /ecommerce/product/3/_update
+{
+  "doc": {
+   "marvel" : "marvelous"
+  }
+}
 
-
-
+10. es 信息检索与结果过滤
+基本检索设计 term 查询、terms 查询、match查询、match_all 查询、query_string查询、prefix 查询、range 查询、more_like_this 查询
+10.1 设置不同字段的排序权重
 
 
 
