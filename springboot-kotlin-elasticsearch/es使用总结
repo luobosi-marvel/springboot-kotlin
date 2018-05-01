@@ -240,15 +240,96 @@ POST /ecommerce/product/3/_update
 10. es 信息检索与结果过滤
 基本检索设计 term 查询、terms 查询、match查询、match_all 查询、query_string查询、prefix 查询、range 查询、more_like_this 查询
 10.1 设置不同字段的排序权重
+10.2 Term 查询、Terms 查询、Wildcard 通配符查询
+term 查询仅匹配在给定字段某个词项的文档，term 查询中的词项不再被解析。另外，如果希望提升该 term 的重要性，可以增加 boost
+ 属性以便提升其重要性
+{
+    "query": {
+        "term" : {                          # term 查询
+            "title": {                      # 查询字段，给定值及 boost
+                "value" : "中国",
+                "boost" : 10                # 设置 term 的 boost 属性
+            }
+        }
+    }
+}
 
+terms 查询允许匹配包含某些词项的文档。例如，如果想查询在文档的额title 字段中包含字符串“中国”或者“韩国”的文档，可以采用
+ 下面的方法，注意 minimum_match 的用法：表示至少匹配....
+ {
+    "query" : {
+        "terms" : {
+            "title" : [
+                "中国",
+                "韩国"
+             ],
+             "minimum_match" : 1            # 设置最小匹配集的大小
+        }
+    }
+ }
 
+wildcard 通配符查询允许在要查询的内容中使用通配符 * 和 ? (* 表示任意多个字符，？ 表示一个任意字符)
 
+Match、Match_all、Match_phrase 查询
+match 查询字句可接受文字、数字和日期等类的数据，match_all 查询是查询指定索引下的所有文档(相当于 select * from)
+{
+    "query" : {
+        "match_all" : {}
+    },
+    "sort" : {
+        "lastModifyTime" : {                # 指定的排序字段
+            "order" : "asc"                 # 排序策略
+        }
+    },
+    "size" : 3                              # 返回的结果集大小
+}
 
+match_phrase 查询对查询文本分析后构建一个短语查询，其中的 shop 参数定义了在查询文本的词项之间应隔多少个未知单词才视为短语匹配成功
+{
+    "query" : {
+        "match_phrase" : {
+            "title" : {
+                "query" : "中国 and 韩国",
+                "slop": 2                   # 定义了在查询文本的词项间的间隔词数量
+            }
+        }
+    },
+    "_source" : [
+        "title"
+    ]
+}
 
+Prefix、Range 查询
+    prefix 查询能够找到某个字段以给定前缀开头的文档。同样，这里也支持 boost 属性来影响其排序结果。
+{
+    "query" : {
+        "prefix" : {
+            "title": {
+                "value": "中华",
+                "boost": 2
+            }
+        }
+    },
+    "_source": {
+        "title"
+    }
+}
 
+range 查询是范围查询。range 查询只作用在单个字段上，并且查询的参数要封装在字段名称中，它也支持如下参数：
+·from —— 范围下界
+·to —— 范围上届
+·include_lower —— 是否包含下界，默认是 true
+·include_upper —— 是否包含上界，默认是 true
+·boost —— 查询的权重
+{
+    "query": {
+        "range": {                          # range 查询
+            "gatherTime": {                 # 指定查询字段及其范围
+                "from": "2015-4-1",
+                "to": "2018-5-1"
+            }
+        }
+    }
+}
 
-
-
-
-
-
+More_like_this、Fuzzy_like_this 查询
