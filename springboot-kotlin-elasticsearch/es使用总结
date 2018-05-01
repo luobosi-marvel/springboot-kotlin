@@ -24,15 +24,16 @@ curl -XPUT 'localhost:9200/myweibo1/_settings' -d '{
 ·blocks.metadata —— true，禁止对 metadata 操作
 
 可以使用下面一次性获取多个索引文件（例如返回weibo、weibo2两个索引文件）
-curl -XGET 'http://localhost:9200/weibo,weibo2/_settings'
+GET /weibo,weibo2/_settings'
 使用 _all 参数来获取所有的索引的配置信息
-curl -XGET 'http://localhost:9200/_all/_settings'
+GET /_all/_settings'
 使用通配符来获取一批索引的配置参数
-curl -XGET 'http://localhost:9200/.marvel*/_settings'
+GET /.marvel*/_settings'
 
 3. 获取索引状态信息 _stats 参数
 curl -XGET 'http://localhost:9200/_stats'
-在返回结果中我们会看到几个对象：primaries(包含当前节点之上的所有主分片的信息)、total(包含所有分片及副本的信息)。另外，所有这些对象都包含如下对象
+在返回结果中我们会看到几个对象：primaries(包含当前节点之上的所有主分片的信息)、total(包含所有分片及副本的信息)。
+另外，所有这些对象都包含如下对象
 ·docs —— 显示被索引文档的信息，其中的 count 值表示所描述的索引中的文档数量
 ·store —— 反应索引的大小，以及 throttling 信息等
 ·indexing —— 索引操作信息
@@ -62,22 +63,160 @@ curl -XPOST 'http://localhost:9200' -d '{
 
 4.2 获取映像信息
 GET /{index}/_mapping/{type}
-curl -XGET 'http://localhost:9200/weibo/_mapping/wb'
-curl -XGET 'http://localhost:9200/_all/_mapping'
-curl -XGET 'http://localhost:9200/_all/_mapping/wb,pages' # 只查看wb 和 pages 中的信息
+GET /weibo/_mapping/wb
+GET /_all/_mapping
+GET /_all/_mapping/wb,pages # 只查看wb 和 pages 中的信息
 查看索引文件名为 weibo、类型为 wb、字段为 user 的映像配置信息
-curl -XGET 'http://localhost:9200/weibo/_mapping/wb/field/user'
+GET /weibo/_mapping/wb/field/user'
 查看索引名为 bookdb、类型为 book 、字段为 authors 的映像配置信息
 GET /bookdb/_mapping/book/field/authors
 # 在多个 Index 或者多个 Type 中查询 Mapping 的方法
-curl -XGET 'http://localhost:9200/weibo,weibo2/_mapping/field/time'
-curl -XGET 'http://localhost:9200/_all/_mapping/wb,pages/field/time,message'    # 多个属性用逗号隔开
-curl -XGET 'http://localhost:9200/_all/_mapping/wei*/field/*.id'                # 使用通配符
+GET /weibo,weibo2/_mapping/field/time'
+GET /_all/_mapping/wb,pages/field/time,message'    # 多个属性用逗号隔开
+GET /_all/_mapping/wei*/field/*.id'                # 使用通配符
 
 
+4.3 删除映像信息
+[delete] /{index}/{type}
+[delete] /{index}/{type}/_mapping
+[delete] /{index}/{_mapping}/{type}
+在上述语句后面的 {index} 参数和 {type} 参数列表中可使用的参数如下，如果存在多个名称，用逗号分隔他们即可
+{index} 部分：     * |  _all  |  glob pattern  |  name1, name2, ...
+{type}  部分：     * |  _all  |  glob pattern  |  name1, name2, ...
 
 
+5. 管理索引文件
+5.1 打开、关闭、检测、删除索引文件
+5.2 清空索引缓存
+清空指定索引中的缓存(使用 clear 参数)
+POST /weibo/_cache/clear
+清空多个索引中的缓存
+POST /weibo1,weibo2/_cache/clear
+5.3 刷新索引数据
+通过 POST 方法中的 _refresh 参数
+POST /weibo/_refresh                  # 刷新指定索引
+POST /weibo,weibo2/_refresh           # 刷新多个
+POST /_refresh                        # 刷新多个
+5.4 优化索引数据
+通过 _optimize 参数，可以优化一个或多个索引
+POST /weibo/_optimize
+5.5 Flush 操作
+POST /weibo/_flush
 
+6. 设置中文分词器
+全文检索往往需要对中文进行分词。如果需要为当前的索引文件定义一个新的分词器，需要先关闭当前索引，然后在更改分词器后，
+再次打开这个索引文件（如果不先关闭索引，那么会报错）
+POST /weibo/_close                    # 关闭 weibo 索引
+curl -XPUT 'http://localhost:9200/weibo/_settings' -d '{
+    "analysis" : {                                                  # 更改分词器
+        "analyzer" : {
+            "content" : {
+                "type" : "custom",                                  # 设置应用分词器的字段
+                "tokenizer" : "standard"                            # 采用的分词器
+            }
+        }
+    }
+}'
+POST /weibo/_open                     # 重新打开 weibo 索引
+
+7. 对文档的其他操作
+获取信息、添加、删除、修改、更新
+7.1 获取指定文档信息
+GET /weibo/wb/2                       # 获取 Index:weibo Type:wb _id:2 的文档信息
+设置想要显示或屏蔽的结果，演示关闭 _source 过滤器后的效果（语句中的? 表示其后面是参数，pretty 表示返回的结果中显示缩进以方便阅读）
+GET /bookdb/book/15?pretty&_source=false
+# 查询，指定要查询出来商品的名称和价格就可以(搜索指定字段)
+GET /ecommerce/product/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "_source": ["name", "price"]
+}
+
+8. 查询：检索文档
+GET /index/type/id
+GET /ecommerce/product/3
+
+# 1. query string search
+# 搜索全部内容
+GET /ecommerce/product/_search
+
+GET /_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+# the _score can be changed with the boost parameter
+GET /_search
+{
+  "query": {"match_all": {"boost":1.2}}
+}
+
+GET /_search
+{
+  "query": {
+    "match_none": {}
+  }
+}
+
+# 排序 查询名称包含 marvel 的商品，同时按照价格降序排序
+GET /ecommerce/product/_search
+{
+  "query": {
+    "match": {
+      "name": "marvel"
+    }
+  },
+  "sort": [
+    {
+      "price": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+# 查询，分页查询商品，总共 3 条商品
+GET /ecommerce/product/_search
+{
+  "query": {"match_all": {}}
+  , "from": 0
+  , "size": 20
+}
+
+# 查询，指定要查询出来商品的名称和价格就可以(搜索指定字段)
+GET /ecommerce/product/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "_source": ["name", "price"]
+}
+
+# 查询，使用 filter 价格范围
+GET /ecommerce/product/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {"match": {
+          "name": "marvel"
+        }}
+      ],
+      "filter": {
+        "range": {
+          "price": {
+            "gte": 10,
+            "lte": 40
+          }
+        }
+      }
+    }
+  }
+}
 
 
 
