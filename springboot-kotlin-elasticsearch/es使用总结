@@ -22,3 +22,76 @@ curl -XPUT 'localhost:9200/myweibo1/_settings' -d '{
 ·blocks.read —— 如设为 true，则禁止读取操作
 ·blocks.write —— true，禁止写操作
 ·blocks.metadata —— true，禁止对 metadata 操作
+
+可以使用下面一次性获取多个索引文件（例如返回weibo、weibo2两个索引文件）
+curl -XGET 'http://localhost:9200/weibo,weibo2/_settings'
+使用 _all 参数来获取所有的索引的配置信息
+curl -XGET 'http://localhost:9200/_all/_settings'
+使用通配符来获取一批索引的配置参数
+curl -XGET 'http://localhost:9200/.marvel*/_settings'
+
+3. 获取索引状态信息 _stats 参数
+curl -XGET 'http://localhost:9200/_stats'
+在返回结果中我们会看到几个对象：primaries(包含当前节点之上的所有主分片的信息)、total(包含所有分片及副本的信息)。另外，所有这些对象都包含如下对象
+·docs —— 显示被索引文档的信息，其中的 count 值表示所描述的索引中的文档数量
+·store —— 反应索引的大小，以及 throttling 信息等
+·indexing —— 索引操作信息
+·get —— 实时获取操作信息
+·search —— 搜索操作信息
+
+4. 通过映像 Mapping 配置索引
+为索引文件添加映像有两种方式：一种是定义在配置文件中，另一种是在运行时手动提交映像
+4.1 在索引中使用映像
+# 通过 Mapping 设置 Index 中某个 Type 下的 Field 中的细节信息
+curl -XPOST 'http://localhost:9200' -d '{
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings" : {
+        "wb" : {                                # 类型（Type） wb
+            "properties" : {                    # 属性
+                "user" : {                      # wb 的字段名
+                    "type" : "string"           # 类型是 string 类型
+                    "index" : "not_analyzed"    # 不分词
+                }
+            }
+        }
+    }
+}'
+
+4.2 获取映像信息
+GET /{index}/_mapping/{type}
+curl -XGET 'http://localhost:9200/weibo/_mapping/wb'
+curl -XGET 'http://localhost:9200/_all/_mapping'
+curl -XGET 'http://localhost:9200/_all/_mapping/wb,pages' # 只查看wb 和 pages 中的信息
+查看索引文件名为 weibo、类型为 wb、字段为 user 的映像配置信息
+curl -XGET 'http://localhost:9200/weibo/_mapping/wb/field/user'
+查看索引名为 bookdb、类型为 book 、字段为 authors 的映像配置信息
+GET /bookdb/_mapping/book/field/authors
+# 在多个 Index 或者多个 Type 中查询 Mapping 的方法
+curl -XGET 'http://localhost:9200/weibo,weibo2/_mapping/field/time'
+curl -XGET 'http://localhost:9200/_all/_mapping/wb,pages/field/time,message'    # 多个属性用逗号隔开
+curl -XGET 'http://localhost:9200/_all/_mapping/wei*/field/*.id'                # 使用通配符
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
