@@ -403,4 +403,97 @@ And Filter 及 Or Filter
 }
 
 # Exist Filter 和 Missing Filter
+{
+    "filter" : {
+        "exists" : {                         # exists filter 过滤搜索结果，使其必须存在某个指定的字段
+            "field" : "字段名"
+        }
+    }
+}
+
+missing filter 的作用与 exists filter 正好相反。它除了可以选择那些字段缺失的文档外，还可以指定 Elasticsearch 将哪些值
+作为空值处理，这适合于输入数据中包含空值等的情形。
+{
+    "filter" : {
+        "missing" : {
+            "field" : "字段名",
+            "null_value" : []
+        }
+    }
+}
+
+Type Filter
+{
+    "filter" : {
+        "type" : {
+            "field" : "pages"               # 返回类型文件名为 pages 的结果集
+        }
+    }
+}
+
+Match_all Filter
+{
+    "filter" : {
+        "match_all" : {}                    # 相当于 select * from
+    }
+}
+
+Not Filter  not filter 的作用是过滤掉所有满足该过滤器的结果
+{
+    "filter" : {
+        "not" : {
+            "range" : {
+                "gatherTime" : {
+                    "from" : "now-23d",
+                    "to" : "now"
+                }
+            }
+        }
+    }
+}
+
+
+Query Filter
+query filter 将一个可以含有逻辑运算符的查询用 filter 包裹起来并当作一个过滤器来用
+{
+    "filter" : {
+        "query" : {
+            "query_string" : {
+                "query" : "中国 AND 美国"
+            }
+        }
+    }
+}
+
+复合查询
+复合查询可以将各个子查询封装在一起，并通过下面的一些选项连接起来。
+·should —— 封装在该选项中的查询可以匹配也可以不匹配
+·must —— 封装在该选项下的查询必须在返回的文档中被匹配上
+·must_not —— 封装在该选项下的查询不能在返回的文档中被匹配上
+
+信息统计分析与搜索提示
+
+Aggregations (这一块还挺重要的，暂时先不整理这一块)
+# aggregations 形式化统用形式
+"aggregations" : {
+    "<aggregation_name>" : {
+        "<aggregation_type>" : {
+            <aggregation_body>
+        }
+        [,"meta" : {  [<meta_data_body>] } ]?
+        [,"aggregations" : { [<sub_aggregation>]+ } ]?
+    }
+    [,"<aggregation_name_2>" : { ... } ]*
+}
+
+
+
+
+
+
+
+
+
+
+
 
