@@ -333,3 +333,74 @@ range 查询是范围查询。range 查询只作用在单个字段上，并且�
 }
 
 More_like_this、Fuzzy_like_this 查询
+
+
+Filter 概述（原理类似布隆过滤器）
+    ES 在执行带有 filter 的查询是，会打开索引的每个 segment 段文件，然后去判断里面的文档是否符合该 filter 要求，
+并且这个匹配的结果用一个很大的只有两个状态的数组 BitSet 来存储，如果一个文档和 filter 查询匹配，那么对其对应的
+bit 位就设置为 1，否则设置为 0。下次如果面对同样的 filter 查询，直接使用内存里面的 BitSet 来进行判断即可，而不需要
+再打开索引的 segment 文件了，这样就可以大大提高了查询处理的速度。
+    可见，在 ES 的检索过程中可以使用 filter 字句，其主要作用有两点：首先，它能够过滤满足条件的部分结果；其次，filter
+字句可很好的将数据缓存在内存中，这样可大大加快下一次检索速度(需要添加 _cache 参数)，因此，建议在可能的情况下尽量
+使用 filter 代替一般的查询以便进一步提高效率。这样做的代价是存储空间的消耗和第一次执行过滤时的查询时间。
+最好把经常使用的过滤结果缓存，对于 and、bool、or 过滤器也可以开启缓存功能
+
+常用 Filter 及其应用
+And Filter 及 Or Filter
+逻辑关系操作符 and 和 or 可以用在对检索结果的的 filter 操作上，and filter 和 or filter 可以将检索结果用指定的逻辑
+关系运算符连接起来。也就是说，这几个过滤器之间满足逻辑与，又或者满足逻辑或的关系
+"filter" : {
+    "or" : [
+        {
+            "term" : {"字段1" : "检索词1"}
+
+        },
+        {
+            "term" : {"字段2" : "检索词2"}
+        }
+    ]
+}
+# 基于 and filter 的过滤，将 range 检索和 term 检索结合起来并缓存结果
+{
+    "filter" : {
+        "and" : [
+            {
+                "range" : {
+                    "时间字段" : {
+                        "from" : "now-10d",
+                        "to" : "now"
+                    }
+                }
+            },
+            {
+                "term" : {
+                    "字段" : "检索词"
+                }
+            }
+        ], "_cache" : true                      # _cache 参数的用法
+    }
+}
+
+# bool filter 可以将多个查询块通过 must、must_not 等连接词整合在一起。
+{
+    "filter" : {
+        "bool" : {
+            "must" : {                          # 必须要满足的条件，这里以 term query 为例
+                "term" : {
+                    "字段1" : "检索词"
+                }
+            },
+            "must_not" : {                      # 必须要排除的条件，这里以时间范围为例
+                "range" : {
+                    "时间段字段" : {
+                        "from" : "now-1d",
+                        "to" : "now"
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Exist Filter 和 Missing Filter
+
