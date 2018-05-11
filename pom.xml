@@ -21,6 +21,10 @@
         <!-- 基础 – 入门篇 -->
         <!-- Spring Boot 之 HelloWorld 详解 -->
         <module>springboot-kotlin-helloworld</module>
+        <!-- Spring Boot 之 kotlin 整合 elasticsearch -->
+        <module>springboot-kotlin-elasticsearch</module>
+        <!-- Spring Boot 之 kotlin 整合 mybatis -->
+        <module>springboot-kotlin-mybatis</module>
     </modules>
 
     <properties>
