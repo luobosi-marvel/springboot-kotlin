@@ -1,0 +1,26 @@
+1. logstash 安装，下载最新版本的logstash: https://www.elastic.co/cn/downloads/logstash
+2. 随便在一个目录下解压即可
+3. 进入 bin 目录下面，添加一个 logstash.conf 文件，并在文件下面添加如下内容
+input {
+    stdin{
+    }
+}
+
+output {
+    stdout{
+    }
+}
+4. 然后通过 cmd 进入logstash 安装的 bin 目录下面，使用下面命令启动
+logstash -f logstash.conf
+
+5. 通过浏览器访问  localhost:9600 出现下面内容即启动成功
+{
+	"host": "HTSB-PC",
+	"version": "6.2.4",
+	"http_address": "127.0.0.1:9600",
+	"id": "35adb047-f90e-44df-8a22-a8f241c1d093",
+	"name": "HTSB-PC",
+	"build_date": "2018-04-12T22:29:17Z",
+	"build_sha": "a425a422e03087ac34ad6949f7c95ec6d27faf14",
+	"build_snapshot": false
+}
