@@ -1,3 +1,5 @@
+1. logstash 的 bin 目录下添加一个logstash.conf 文件，然后添加如下内容
+
 input {
   jdbc {
     # 连接 MySQL 的驱动包的位置
@@ -31,3 +33,5 @@ output {
         # "password" => "marvel"
     }
 }
+
+2. 在 cmd 中的 logstash 的bin 目录下使用 logstash -f logstash.conf 命令启动
