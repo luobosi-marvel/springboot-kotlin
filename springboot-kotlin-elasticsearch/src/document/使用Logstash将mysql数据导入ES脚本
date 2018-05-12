@@ -1,5 +1,5 @@
 1. logstash 的 bin 目录下添加一个logstash.conf 文件，然后添加如下内容
-
+# 数据来源地
 input {
   jdbc {
     # 连接 MySQL 的驱动包的位置
@@ -16,6 +16,7 @@ input {
     statement => "select id, name, password, update_time from test where update_time > convert_tz(:sql_last_value, '+00:00','+08:00')"
   }
 }
+# 数据输出地
 output {
     stdout {
         codec => rubydebug
