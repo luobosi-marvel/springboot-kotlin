@@ -6,7 +6,7 @@
             ——> status:[400 TO 499] AND (extension:php OR extension:html)
         - 关于 Lucene Query syntax 更详细的文档可以查看下面链接：
             https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-query-string-query.html#query-string-syntax
-    -
+    - Discover
     - 查询
         - 单项 term 查询
             可以直接关键字查询
@@ -33,6 +33,14 @@
         - 转义特殊字符
             + - && || () {} ][ ~ ^ " * ? : \
             注意：以上字符当做值搜索的时候需要用 \ 转义
+    - Kibana 创建数据图表
+        - Bar chart 长条图
+        - Line chart 折线图
+        - Pie chart 饼图
+        - Area chart 分区图
+        - Data table 数据表格
+        - Metic 计算器
+
 
 
 
