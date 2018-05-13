@@ -1,0 +1,38 @@
+1. Discover
+    - Lucene Query syntax
+        - 查找指定的字段 ——> status:enable
+        - 范围查找 ——> status:[400 to 499]
+        - 使用一些逻辑操作符 and or not（查找 status 4XX and extension of php or html）
+            ——> status:[400 TO 499] AND (extension:php OR extension:html)
+        - 关于 Lucene Query syntax 更详细的文档可以查看下面链接：
+            https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-query-string-query.html#query-string-syntax
+    -
+    - 查询
+        - 单项 term 查询
+            可以直接关键字查询
+        - 字段 field 查询
+            field:value 例：city:KeyPort, age:26
+        - 通配符
+            ? 匹配单子字符   例：H?bbs
+            * 匹配 0 到多个字符    例：H*
+            注意：? * 不能作为第一个字符
+        - 范围查询
+            age:[20 TO 30]   age:{20 TO 30}
+            注意  [] 表示端点数值包含在范围内，{} 表示端点数值不在范围内
+        - 逻辑操作
+            AND OR 例子：firstName:H* AND age:20   firstName:H* OR age:20
+            +: 搜索结果中必须包含此项
+            -: 不能包含此项
+            例: +firstName:H* -age:20 city:H* firstName 字段结果中必须存在H开头的，
+                不能有年龄是 20 的，city 字段 H 开头的可有可无
+        - 分组
+            (firstName:H* OR age:20) AND state:KS   先查询名字H 开头年龄或者是 20 的结果
+                ，然后再与国家是 KS 的结合
+        - 字段分组
+            firstName:(+H* -He*)    搜索 firstName 字段里 H 开头的结果，并且排除 firstName 里 He 开头的结果
+        - 转义特殊字符
+            + - && || () {} ][ ~ ^ " * ? : \
+            注意：以上字符当做值搜索的时候需要用 \ 转义
+
+
+
