@@ -1,21 +1,21 @@
 # IntelliJ project files
-.idea
-*.iml
-out
-gen
+ .idea
+ *.iml
+ out
+ gen
 
-target/
-*.DS_Store
-*.ipr
-*.iws
-*.classpath
-*.project
-.settings/
-/bin
-*.tar
-*.tar.gz
-*.zip
+ target/
+ *.DS_Store
+ *.ipr
+ *.iws
+ *.classpath
+ *.project
+ .settings/
+ /bin
+ *.tar
+ *.tar.gz
+ *.zip
 
-#rebel 热部署插件
-.rebel*
-rebel.xml
+ #rebel 热部署插件
+ .rebel*
+ rebel.xml
