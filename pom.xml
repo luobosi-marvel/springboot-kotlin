@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+        <version>2.0.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -25,6 +25,8 @@
         <module>springboot-kotlin-elasticsearch</module>
         <!-- Spring Boot 之 kotlin 整合 mybatis -->
         <module>springboot-kotlin-mybatis</module>
+        <!-- Spring Boot 之 kotlin 整合 Elastic-Job 分布式定时任务 -->
+        <module>springboot-kotlin-elastic-job</module>
     </modules>
 
     <properties>
@@ -34,6 +36,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <kotlin.version>1.2.40</kotlin.version>
+        <kotlin.jre8.version>1.2.41</kotlin.jre8.version>
     </properties>
 
     <dependencies>
@@ -53,7 +56,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jre8</artifactId>
-            <version>${kotlin.version}</version>
+            <version>${kotlin.jre8.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
