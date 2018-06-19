@@ -36,3 +36,44 @@ output {
 }
 
 2. 在 cmd 中的 logstash 的bin 目录下使用 logstash -f logstash.conf 命令启动
+
+
+
+
+
+
+# 数据来源地
+input {
+  jdbc {
+    # 连接 MySQL 的驱动包的位置
+    jdbc_driver_library => "/opt/mysql-connector-java-5.1.12-bin.jar"
+    # Driver 类
+    jdbc_driver_class => "com.mysql.jdbc.Driver"
+    # 连接数据的地址
+    jdbc_connection_string => "jdbc:mysql://10.1.87.57:3306/elastic_search_db"
+    # 数据库用户
+    jdbc_user => "root"
+    # 数据库密码
+    jdbc_password => "root"
+    # 需要导入数据使用的 SQL
+    statement => "select id, name, password, update_time from test where update_time > convert_tz(:sql_last_value, '+00:00','+08:00')"
+  }
+}
+# 数据输出地
+output {
+    stdout {
+        codec => rubydebug
+    }
+    elasticsearch {
+        # ElasticSearch 的地址
+        "hosts" => "192.168.70.138:9200"
+        # ElasticSearch 索引
+        "index" => "elastic_search_db"
+        # Type
+        "document_type" => "product"
+        # 主键
+        "document_id" => "%{pid}"
+        # "user" => "elastic"
+        # "password" => "marvel"
+    }
+}

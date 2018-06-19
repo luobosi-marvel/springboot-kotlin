@@ -487,8 +487,10 @@ Aggregations (这一块还挺重要的，暂时先不整理这一块)
 }
 
 
-
-
+搜索提示 Suggester plugin
+如何实现汉字、拼音、简拼搜索
+https://github.com/medcl/elasticsearch-analysis-pinyin/issues/43
+https://elasticsearch.cn/article/142
 
 
 

@@ -1,0 +1,15 @@
+Linux 下安装ES
+
+
+Linux 如何启动 ES
+    环境要求
+    1. jdk至少需要在1.8.0_73以上版本
+    2. linux的内核版本需要在2.6以上(我用的是centos7.x)
+
+    elasticsearch 不能以 root 用户启动，需要先改变目录的用户权限，然后再以普通用户启动
+
+    进入 elasticsearch 目录下
+
+    ./bin/elasticsearch
+
+
