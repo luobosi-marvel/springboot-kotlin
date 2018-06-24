@@ -1,6 +1,6 @@
-create database estore_db;
+create database elastic_search_db;
 
-use estore_db;
+use elastic_search_db;
 
 drop table if exists `user`;
 create table `user` (

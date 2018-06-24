@@ -1,0 +1,93 @@
+# ======================== Elasticsearch Configuration =========================
+#
+# NOTE: Elasticsearch comes with reasonable defaults for most settings.
+#       Before you set out to tweak and tune the configuration, make sure you
+#       understand what are you trying to accomplish and the consequences.
+#
+# The primary way of configuring a node is via this file. This template lists
+# the most important settings you may want to configure for a production cluster.
+#
+# Please consult the documentation for further information on configuration options:
+# https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+# cluster.name指定集群的名称，同一个集群的节点要设置在同一个集群名称。如果不配置该项，系统默认取elasitcsearch。
+#cluster.name: my-application
+#
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+# node.name指定节点的名称，同一集群的节点名称不能相同，如果不配置该项，系统会随机分配一个名称。
+#node.name: node-1
+#
+# Add custom attributes to the node:
+# 指定节点的部落属性，这是一个比集群更大的范围。
+#node.attr.rack: r1
+#
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+# 关于数据和日志的存放路径，这两个设置十分重要，因为比如要进行版本升级，如果程序与数据分离，将非常容易实现。程序的崩溃也不影响数据。
+# 如果不配置这两项，这两个目录将在ES的主目录下创建。
+#path.data: /path/to/data
+#
+# Path to log files:
+#
+#path.logs: /path/to/logs
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+# bootstrap.memory_lock，启动后是否锁定内存，提高ES的性能
+#bootstrap.memory_lock: true
+#
+# Make sure that the heap size is set to about half the memory available
+# on the system and that the owner of the process is allowed to use this
+# limit.
+#
+# Elasticsearch performs poorly when the system is swapping the memory.
+#
+# ---------------------------------- Network -----------------------------------
+# 这一部分是有关网络的设置，比如RESTful接口，包括curl、浏览器、Kibana等HTTP连接过来的，都是通过这里设置。
+# Set the bind address to a specific IP (IPv4 or IPv6):
+# 设置对外的网关IP，默认本地回环。
+#network.host: 192.168.0.1
+#
+# Set a custom port for HTTP:
+# 设置对外的端口，端口建议重新设置，提高安全性。默认9200
+http.port: 9200
+#
+# For more information, consult the network module documentation.
+network.bind_host: "0.0.0.0"
+#
+# --------------------------------- Discovery ----------------------------------
+# 这一部分主要设置集群的节点之间的连接的，所以叫发现，
+#
+# Pass an initial list of hosts to perform discovery when new node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+#discovery.zen.ping.unicast.hosts: ["host1", "host2"]
+#
+# Prevent the "split brain" by configuring the majority of nodes (total number of master-eligible nodes / 2 + 1):
+# 设置集群内节点的主机，比如集群内有两台机192.168.2.1，192.168.2.2，TCP端口都设置为9300
+# discovery.zen.ping.unicast.hosts: ["192.168.2.1:9300", "192.168.2.2:9300"]
+#
+#discovery.zen.minimum_master_nodes:
+#
+# For more information, consult the zen discovery module documentation.
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+# Block initial recovery after a full cluster restart until N nodes are started:
+#
+#gateway.recover_after_nodes: 3
+#
+# For more information, consult the gateway module documentation.
+#
+# ---------------------------------- Various -----------------------------------
+#
+# Require explicit names when deleting indices:
+#
+#action.destructive_requires_name: true
