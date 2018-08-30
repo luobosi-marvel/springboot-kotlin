@@ -30,7 +30,6 @@ open class ProductController {
                            @RequestParam(value = "score") score: Int): Product? {
         val product = Product(id, productName, description, score)
         this.productService.saveProduct(product)
-
         return product
     }
 }
