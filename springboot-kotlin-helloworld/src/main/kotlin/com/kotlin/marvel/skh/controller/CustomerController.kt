@@ -14,18 +14,18 @@ import javax.annotation.Resource
  */
 @RestController
 @RequestMapping(value = "/customer")
-open class CustomerController {
+class CustomerController {
 
     @Resource
     private lateinit var customerService: CustomerService
 
     @GetMapping(value = "/hello")
-    open fun hello(): String? {
+    fun hello(): String? {
         return "hello world!"
     }
 
     @GetMapping(value = "/list")
-    open fun list(): List<Customer>? {
+    fun list(): List<Customer>? {
         return customerService.list()
     }
 
