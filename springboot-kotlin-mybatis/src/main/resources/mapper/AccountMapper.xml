@@ -60,6 +60,8 @@
         </trim>
     </insert>
 
+
+
     <!--
         @描述：查找所有纪录
     -->
@@ -79,11 +81,13 @@
         WHERE username = #{username, jdbcType=VARCHAR}
     </select>
 
-
     <!--
         @描述：根据用户名删除用户信息
     -->
     <delete id="delete">
         DELETE FROM account WHERE username = #{username, jdbcType=VARCHAR}
     </delete>
+
+
+
 </mapper>
